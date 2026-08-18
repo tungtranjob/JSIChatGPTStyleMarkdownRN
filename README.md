@@ -43,8 +43,10 @@ src/data/dummyMessages.ts            transcript mẫu + nội dung stream
 react-native.config.js               trỏ autolinking vào module local
 ```
 
-Chi tiết kiến trúc, danh sách prop và phạm vi markdown hỗ trợ nằm trong
-[modules/react-native-md-list/README.md](modules/react-native-md-list/README.md).
+README của module ([modules/react-native-md-list/README.md](modules/react-native-md-list/README.md))
+có phần chi tiết: bảng prop truyền từ JS xuống native (kèm đơn vị và việc native
+làm gì với từng prop), bảng event bắn ngược lên JS, sơ đồ đường đi của một prop
+qua Fabric, hướng dẫn tích hợp và các bước thêm một prop mới.
 
 ## Dùng trong app khác
 
