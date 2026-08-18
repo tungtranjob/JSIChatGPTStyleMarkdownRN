@@ -1,97 +1,53 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# RNApp — Markdown Chat List (native)
 
-# Getting Started
+App demo cho `react-native-md-list`: một list chat kiểu ChatGPT / Gemini được render
+**hoàn toàn bằng native** — Kotlin + RecyclerView trên Android, Swift + UITableView
+trên iOS — nối vào React Native qua Fabric (New Architecture).
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+JS chỉ giữ mảng `messages`. Toàn bộ phần nặng (parse markdown, dựng span, đo text,
+recycle cell, prefetch) nằm ở native, nên shadow tree chỉ sâu đúng 1 node và
+streaming 60 token/giây vẫn không tạo thêm view nào ở phía JS.
 
-## Step 1: Start Metro
+## Ảnh chụp màn hình
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+| iOS (UITableView) | Android (RecyclerView) |
+| --- | --- |
+| <img src="markdownios.png" width="320" alt="Markdown Chat trên iOS" /> | <img src="markdownandroid.png" width="320" alt="Markdown Chat trên Android" /> |
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+Màn demo ([src/screens/MarkdownChatScreen.tsx](src/screens/MarkdownChatScreen.tsx))
+gồm: transcript mẫu dùng đủ mọi cú pháp markdown, nút mô phỏng câu trả lời
+streaming, lazy load trang lịch sử cũ hơn khi kéo lên đầu, chuyển light/dark,
+nút Copy trên code block và mở link ra trình duyệt.
 
-```sh
-# Using npm
-npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+## Chạy thử
 
 ```sh
-# Using npm
+npm install
+cd ios && bundle exec pod install && cd ..   # chỉ cần cho iOS
+
+npm start          # Metro
+npm run ios        # hoặc
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
+> Cần bật New Architecture (mặc định đã bật trên React Native 0.87).
+> Sau khi sửa spec trong `modules/react-native-md-list/src`, chạy lại
+> `pod install` (iOS) hoặc build lại Gradle (Android) để codegen sinh lại.
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+## Cấu trúc
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+```
+modules/react-native-md-list/   thư viện native (xem README riêng của module)
+src/screens/MarkdownChatScreen.tsx   màn demo
+src/data/dummyMessages.ts            transcript mẫu + nội dung stream
+react-native.config.js               trỏ autolinking vào module local
 ```
 
-Then, and every time you update your native dependencies, run:
+Chi tiết kiến trúc, danh sách prop và phạm vi markdown hỗ trợ nằm trong
+[modules/react-native-md-list/README.md](modules/react-native-md-list/README.md).
 
-```sh
-bundle exec pod install
-```
+## Dùng trong app khác
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+`react-native.config.js` khai báo `modules/react-native-md-list` như một local
+library, autolinking lo phần Gradle và CocoaPods. Copy thư mục module sang project
+khác, khai báo tương tự rồi chạy `pod install` là dùng được.
